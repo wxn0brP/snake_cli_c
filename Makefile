@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -lncurses
+CFLAGS = -Wall -Wextra -O2
+LDFLAGS = -lncurses
 
 TARGET = snake
 SRC = $(wildcard *.c)
@@ -11,7 +12,7 @@ all: $(TARGET)
 dev: clean all run
 
 $(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
+	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
