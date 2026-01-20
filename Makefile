@@ -5,9 +5,10 @@ TARGET = snake
 SRC = $(wildcard *.c)
 OBJ = $(SRC:.c=.o)
 
-.PHONY: all clean run
+.PHONY: all clean run dev
 
-all: $(TARGET) run
+all: $(TARGET)
+dev: clean all run
 
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
