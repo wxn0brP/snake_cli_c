@@ -4,17 +4,18 @@
 #include <unistd.h>
 #include <ncurses.h>
 
-#define BOARD_X 10
-#define BOARD_Y 10
-#define WIN_LENGTH 20
-#define DIFFICULTY 120
+int BOARD_X = 10;
+int BOARD_Y = 10;
+int WIN_LENGTH = 20;
+int DIFFICULTY = 120;
+int BOARD_SIZE;
 
 typedef struct
 {
     int x, y;
 } Point;
 
-Point snake[BOARD_X * BOARD_Y];
+Point *snake = NULL;
 Point head = {4, 4};
 Point apple;
 
@@ -125,18 +126,22 @@ void process_input()
     switch (ch)
     {
     case 'w':
+    case KEY_UP:
         dx = 0;
         dy = -1;
         break;
     case 's':
+    case KEY_DOWN:
         dx = 0;
         dy = 1;
         break;
     case 'a':
+    case KEY_LEFT:
         dx = -1;
         dy = 0;
         break;
     case 'd':
+    case KEY_RIGHT:
         dx = 1;
         dy = 0;
         break;
@@ -148,8 +153,9 @@ void process_input()
 
 void init_game()
 {
-    head.x = 4;
-    head.y = 4;
+    head.x = BOARD_X / 2 - 1;
+    head.y = BOARD_Y / 2 - 1;
+
     snake_length = 1;
     snake[0] = head;
     dx = 1;
@@ -157,8 +163,40 @@ void init_game()
     gen_food();
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    int opt;
+    while ((opt = getopt(argc, argv, "w:d:x:y:h")) != -1)
+    {
+        switch (opt)
+        {
+        case 'w':
+            WIN_LENGTH = atoi(optarg);
+            break;
+        case 'd':
+            DIFFICULTY = atoi(optarg);
+            break;
+        case 'x':
+            BOARD_X = atoi(optarg);
+            break;
+        case 'y':
+            BOARD_Y = atoi(optarg);
+            break;
+        case 'h':
+            printf("Usage: %s\n", argv[0]);
+            printf("-w <WIN_LENGTH> -d <DIFFICULTY> -x <BOARD_X> -y <BOARD_Y>\n");
+            return 0;
+        }
+    }
+
+    BOARD_SIZE = BOARD_X * BOARD_Y;
+    snake = malloc(BOARD_SIZE * sizeof(Point));
+    if (snake == NULL)
+    {
+        printf("Error allocating memory\n");
+        return 1;
+    }
+
     srand(time(NULL));
     initscr();
     cbreak();
